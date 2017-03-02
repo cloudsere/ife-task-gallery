@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <style>
+        .views{
+        	position:relative;
+        	height:100%;
+        	width:100%;
+            margin:0;
+        }
+        ul{
+            list-style-type:none;
+            margin:0;
+        }
+        li{
+            border-top:1px solid gray;
+            height:5em;
+            width:100%;
+            margin-left:-40px;
+            padding:10px;
+        }
+        
+        </style>
+    </head>
+    <body>
+    	<div class = 'views'>
+            <div class = 'nav'>
+                <ul>
+                    <li>Item1</li>
+                    <li>Item2</li>
+                    <li>Item3</li>
+                    <li>Item4</li>
+                    <li>Item5</li>
+                    <li>Item6</li>
+                    <li>Item7</li>
+                    <li>Item8</li>
+                    <li>Item9</li>
+                    <li>Item10</li>
+                </ul>
+            </div>
+    	</div>
+    	<script>
+    	function scrollPage(){
+            var scrollSet = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTOp
+            if(document.body.scrollHeight - window.innerHeight <= scrollSet){
+                var lastLi = document.getElementsByTagName('li');
+                var listNumber = lastLi.length;
+                var newList = '';
+                for(var i = 0; i<10; i++){
+                    newList += '<li>Item'+(i+1+listNumber)+'</li>';
+                }
+                var liContainer = document.getElementsByTagName('ul')[0];
+                liContainer.innerHTML += newList;
+            }
+    	}
+        document.addEventListener('scroll',scrollPage,false);
+    	</script>
+    </body>
+</html>

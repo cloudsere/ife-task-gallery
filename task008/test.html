@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width" />
+		<meta charset = 'utf-8'>
+		<style>
+		body{
+			margin:0;
+			padding:0;
+		}
+		#result{
+			position:fixed;
+			top:0;
+			left:10px;
+			background-color:white;
+			width:98%;
+			height:19em;
+			z-index:999;
+			text-align:center;
+			box-shadow:5px 5px 10px #888888;
+		}
+		#resultContent{
+			width:50%;
+			margin:0 auto;
+			text-align:left;
+		}
+
+		#review{
+			position:relative;
+			padding:19em 3em 5em 3em;
+		}
+		
+		@media only screen and (max-width:320px){
+			#result{
+				height:17em;
+			}
+			#resultContent{
+				width:95%;
+			}
+			#review{
+				padding:17em 2em 2em 2em;
+			}
+		}
+		@media only screen and (max-width:414px){
+			#resultContent{
+				width:95%;
+			}	
+		}
+		@media only screen and (max-width:500px){
+			#resultContent{
+				width:95%;
+			}	
+		}
+		
+		</style>
+	</head>
+<body>
+<div class = 'views'>
+	<div id = 'result'>
+		<h3>测试各类高度</h3>
+		<div id = 'resultContent'>
+		</div>
+	</div>
+	<div id = 'review'>
+	<p>
+		如果有人问我，你最喜欢哪一部电影，我可能永远也排不出一个第二名，但是第一绝对是《阿甘正传》。于我而言，《阿甘正传》不仅是我爱上电影最重要的原因，而且也是我人生中最温暖的电影。没看过阿甘，就不会有现在的我。所以即使写经典电影，乃至是这样一部常常名列“人生中必看的XX部电影”的、被说滥了的电影，我也愿意去解读它。从前写中文影评没写过《阿甘正传》，是因为这部电影的内涵太过丰富厚重，我怕写缺了或是写毁了这部电影。但是现在，我愿意试着谈谈在看过第5遍之后，我对这部电影的一些思考和感受。
+	</p>
+
+	<p>
+		看过《阿甘正传》，即使是只看过开头部分的人，一定都不会忘记两个开篇的意象：一个是羽毛，一个是巧克力。这两样东西奠定了全片的基调，同时也带出了这部电影的核心主题：人生或许就像一根羽毛般飘忽不定，人生确如一盒巧克力五味杂陈。 接下来，我们很快地知道了阿甘是一个智商只有75的人，离正常水平还有点距离。但正是这样一个人，在这一波波疯狂翻滚、汹涌向前的世界浪潮里，成为了一个最“正常”的人。他没有被时代所改变，相反，他以一如既往的平和与冷静，赢得了世人的尊重。这不仅是影片大篇幅地书写历史背景的原因之一，而且也是阿甘作为“傻子”最关键的一个理由。在姜文电影里出现过的“疯子”，他们身上更多的是政治和时代留下的烙印，而且颇有唐寅诗中所写的“别人笑我太疯癫，我笑别人看不穿”的意味，他们对外部世界的清楚明白决定了他们并非一般意义上的“疯子”。同样，智商75的阿甘并非真的“傻子”，“傻子”只是起到反讽的作用。另外，“傻子”的角色还给阿甘带来了一个特点，那就是——以不变应万变。
+	</p>
+
+	<p>
+		前几年，网上流行一首谬传为仓央嘉措所作的情诗，叫《见与不见》，其实用在阿甘身上最合适。不管是对珍妮，还是对这个世界，阿甘都自始至终地贯彻着他最初的价值观。我们常常感叹：“这世界变得太快”。既然这世界变得如此之快，身处于其中的我们又如何做到原地不动呢？我想起前几天遇到的一个事，是我在校园里为了我们的微电影小组借某处的桌椅。原本曾经顺利借过一次，想着这次有很多不得不补拍的镜头，想要再借应该不是难事。结果因为是工作日，而且管理的主任觉得我们不够识礼数，就不肯借给我们。我心急之下，考虑到我们的作业要前功尽弃了，而且上次可以这次不行有点不厚道，于是就追问了一句“为什么”。就这么一句话，惹得主任火冒三丈，把我训了一通。也是这件事，让我第一次深刻地感觉到大学校园真的是一个微型社会，我们现在已经是一只脚踏入社会了，想像以前那样不改变真的不行。学会变通学会求人，用灵活的处世之道在这世上生存成了无比迫切的事。做人这么难，执拗给谁看，或许真的只有阿甘这样的“傻子”，才能很好地做到几乎所有人都做不到的“不变”吧。当他们还年轻，珍妮问阿甘他以后想成为什么时，他回答说：“我只想做我自己。”阿甘做到了，只因你不变，世界（珍妮、丹中尉、美国历史）因你而改变，这样的结果多么美好。阿甘永远乐观面对人生的态度没有改变，阿甘无需理由只因纯粹热爱的坚持跑步没有改变，阿甘对珍妮至死不渝的爱也从不曾改变。阿甘的执拗打动了所有人，也打动了银幕外的我们。
+	</p>
+	</div>
+</div>
+<script>
+    function getWindowHeight(){
+    	document.getElementById('resultContent').innerHTML = 
+	    "document.body.offsetHeight: " + document.body.offsetHeight 
+	    + "<br>document.body.clientHeight: " + document.body.clientHeight
+	    + "<br>document.body.parentElement.offsetHeight: " + document.body.parentElement.offsetHeight
+	    + "<br>document.body.parentElement.clientHeight: " + document.body.parentElement.clientHeight
+	    + "<br>document.body.scrollHeight: " + document.body.scrollHeight
+	    + '<br>window.innerHeight: ' + window.innerHeight
+	    + '<br>window.outerHeight: ' + window.outerHeight
+	    + '<br>document.body.scrollTop: ' + document.body.scrollTop
+	    + '<br>document.documentElement.scrollTop: ' + document.documentElement.scrollTop
+	    + '<br>window.pageYOffset: ' + window.pageYOffset;
+    }
+    getWindowHeight();
+    document.addEventListener('scroll',getWindowHeight,'false');
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src = "js/echarts.common.min.js"></script>
+    </head>
+    <body>
+    	<div id = "main" style = "width: 600px;height:400px;"></div>
+    	<script>
+    	var myChart = echarts.init(document.getElementById('main'));
+
+		var option = {
+			title:{
+				text:"2016年在中国能看多少电影？"
+			},
+		    tooltip: {
+		        trigger: 'axis'
+		    },
+		    
+		    legend: {
+		    	right:10,
+		        data:['排片量','单月最高票房电影']
+		    },
+		    xAxis: [
+		        {
+		            type: 'category',
+		            data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+		        }
+		    ],
+		    yAxis: [
+		        {
+		            type: 'value',
+		            name: '排片量（部）',
+		            min: 0,
+		            max: 60,
+		            interval: 5,
+		            axisLabel: {
+		                formatter: '{value} 部'
+		            }
+		        },
+		        {
+		            type: 'value',
+		            name: '票房（亿）',
+		            min: 0,
+		            max: 36,
+		            interval: 3,
+		            axisLabel: {
+		                formatter: '{value} 亿'
+		            }
+		        }
+		    ],
+		    series: [//同一坐标系增加多个图表直接在series数组中添加成员
+		        {
+		            name:'排片量',
+		            type:'bar',
+		            data:[38.0, 23.0, 29.0, 39.0, 28.0, 29.0, 46.0, 42.0, 48.0, 37.0, 50.0, 55.0]
+		        },
+		        {
+		            name:'单月最高票房电影',
+		            type:'line',
+		            yAxisIndex: 1,
+		            data:[10.0, 33.9, 15.3, 
+		            9.8, 12.5, 14.7, 
+		            8.89, 10.0, 11.8, 
+		            3.34, 7.5, 11.7]
+		        }
+		    ]
+		};
+    	myChart.setOption(option);
+    	</script>
+    </body>
+</html>

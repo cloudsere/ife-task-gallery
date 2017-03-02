@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src = "js/three.js"></script>
+        <style>
+            body{ margin:0; }
+            canvas{ width: 100%; height:100%; }
+        </style>
+    </head>
+    <body onload = "init()">
+    	<canvas id = "mainCanvas"></canvas>
+    <script>
+    function init(){
+
+    	var renderer = new THREE.WebGLRenderer({
+	    	canvas:document.getElementById('mainCanvas')
+	    });
+        renderer.setSize( window.innerWidth, window.innerHeight);
+	    renderer.setClearColor(0x6f7877);
+
+    	//定义坐标系
+	    var scene = new THREE.Scene();
+
+
+	    //THREE.OrthographicCamera(left, right, top, bottom, near, far)
+	    //为了保持照相机的横竖比例，需要保证(right - left)与(top - bottom)的比例与Canvas宽度与高度的比例一致。
+	   /* var camera = new THREE.OrthographicCamera(-5,5,3.75,-3.75,0.1,100);*/
+
+	    //THREE.PerspectiveCamera(fov, aspect, near, far)
+	    var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+
+	    //照相机的位置和照相机的方向的设置，前后写有差别
+	    //照相机默认是面向z轴负方向放置的
+	    camera.position.set(25,25,-30);
+	    //让照相机看向原点
+	    camera.lookAt(new THREE.Vector3(0,0,0));
+	    scene.add(camera);
+
+	    //画出坐标系
+	    drawAxes(scene);
+	    function drawAxes(scene) {
+                // x-axis
+                var xGeo = new THREE.Geometry();
+                xGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+                xGeo.vertices.push(new THREE.Vector3(30, 0, 0));
+                var xMat = new THREE.LineBasicMaterial({
+                    color: 0x000000
+                });
+                var xAxis = new THREE.Line(xGeo, xMat);
+                scene.add(xAxis);
+                
+                // y-axis
+                var yGeo = new THREE.Geometry();
+                yGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+                yGeo.vertices.push(new THREE.Vector3(0, 30, 0));
+                var yMat = new THREE.LineBasicMaterial({
+                    color: 0x00ff00
+                });
+                var yAxis = new THREE.Line(yGeo, yMat);
+                scene.add(yAxis);
+                
+                // z-axis
+                var zGeo = new THREE.Geometry();
+                zGeo.vertices.push(new THREE.Vector3(0, 0, 0));
+                zGeo.vertices.push(new THREE.Vector3(0, 0, 30));
+                var zMat = new THREE.LineBasicMaterial({
+                    color: 0x0000ff
+                });
+                var zAxis = new THREE.Line(zGeo, zMat);
+                scene.add(zAxis);
+            }
+        //Lambert材质（MeshLambertMaterial）是符合Lambert光照模型的材质
+        //color:散射光的反射能力 ambient:对环境光的反射能力 emissive:自发光颜色
+        //MeshLambertMaterial的ambient属性好像被弃用了，我在文档里已经找不到它了。另外，现在color就起原先ambient的作用。 
+        var material = new THREE.MeshLambertMaterial({
+        	color:0xff0000
+        });
+       
+        //环境光是指场景整体的光照效果，是由于场景内若干光源的多次反射形成的亮度一致的效果，通常用来为整个场景指定一个基础亮度。
+        /*var light = new THREE.AmbientLight(0xffffff);*/
+
+        //点光源，点光源照到不同物体表面的亮度是线性递减的，因此，离点光源距离越远的物体会显得越暗。
+        //THREE.PointLight(hex, intensity, distance)
+        /*var light = new THREE.PointLight(0xffffff, 2, 100);
+        light.position.set(2,1.5,2);*/
+
+        //平行光源
+        //设置光源位置并不意味着所有光从(2, 5, 3)点射出（如果是的话，就成了点光源），而是意味着，平行光将以矢量(-2, -5, -3)的方向照射到所有平面
+        /*var light = new THREE.DirectionalLight(0xffffff,2);
+        light.position.set(2,5,3);*/
+
+        //聚光灯 THREE.SpotLight(hex,intensity,distance,angle,exponent)
+        //聚光灯是一种特殊的点光源，它能够朝着一个方向投射光线。
+        //除了要设置光源的light.position.set,还需要设置target，light.target.position.set
+        //可以把light.target设置为某一物体，让光线一直跟随着这个物体
+
+
+        //THREE.CubeGeometry(width, height, depth, widthSegments, heightSegments, depthSegments)
+	    var cube = new THREE.Mesh(new THREE.CubeGeometry(20,5,13),
+	    	material
+	    );
+        cube.position.set(0,5,-3)
+	    cube.castShadow = true;
+		scene.add(cube);
+
+		var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
+		light.position.set(40,25,-20);
+        light.target = cube;
+        light.castShadow = true;
+        scene.add(light);
+
+         var ambient = new THREE.AmbientLight(0x666666);
+         scene.add(ambient);
+
+         var materialCircle = new THREE.MeshLambertMaterial({
+            color:0x031915
+        })
+         //THREE.TorusGeometry(radius, tube, radialSegments, tubularSegments,arc)
+        
+        function drawTorus(r1,r2,x,y,z){
+            var torus = new THREE.Mesh(new THREE.TorusGeometry(r1,r2,12,18),
+             materialCircle
+            );
+            torus.position.set(x,y,z);
+            scene.add(torus);
+         }
+         drawTorus(2,2/3,-5,2,-10);
+         drawTorus(2,2/3,-5,2,10);
+         drawTorus(2,2/3,5,2,-10);
+         drawTorus(2,2/3,5,2,10);
+         
+        function drawCircle(scene,x,y,z){
+            var geometry = new THREE.CylinderGeometry( 0.8, 0.8, 0.1, 10 );
+            var materialCarLight = new THREE.MeshBasicMaterial( {color: 0xfefefa} );
+            var cylinder = new THREE.Mesh( geometry, materialCarLight );
+            cylinder.rotation.z = 4.8;
+            cylinder.position.set(x,y,z);
+            scene.add( cylinder );
+        }
+        drawCircle(scene,11,7.5,-2);
+        drawCircle(scene,11,7.5,-7);
+
+        function drawCar(scene,x,y,z){
+            var geometry = new THREE.CylinderGeometry( 1, 1, 0.1, 10 );
+            var materialCarLight = new THREE.MeshBasicMaterial( {color: 0x6b818c} );
+            var cylinder = new THREE.Mesh( geometry, materialCarLight );
+            cylinder.rotation.x = 4.8;
+            cylinder.position.set(x,y,z);
+            scene.add( cylinder );
+        }
+        drawCar(scene,8.9,6.5,-14);
+        drawCar(scene,0.8,6.5,-14);
+
+		/*var plane = new THREE.Mesh(new THREE.PlaneGeometry(2,4));
+		scene.add(plane);*/
+		renderer.render(scene,camera);
+    }
+    </script>
+    </body>
+</html>

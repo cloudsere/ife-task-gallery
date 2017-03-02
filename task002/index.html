@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+			
+			/*伪元素部分*/
+        	input[type = radio],input[type = checkbox]{
+        		position:absolute;
+        		visibility:hidden;
+        	}
+            #pseudo{
+                display:inline-block;
+            }
+        	#pseudo>input[type = radio]+label:before,#pseudo>input[type = checkbox]+label:before{
+        		margin-left:10px;
+        		height:13px;
+        		width:13px;
+        		content:' '; 
+        		border:1px double #e6e6e6;
+        		display:inline-block;
+        		cursor:pointer;
+        		vertical-align:bottom;
+        	}
+        	#pseudo>input[type = radio]+label:before{
+        		border-radius:50%;
+        	}
+
+        	#pseudo>input[type = radio]:checked+label:before,#pseudo>input[type = checkbox]:checked+label:before{
+        		border:1px solid red;
+        		color:red;
+        		display:inline-block;
+        	}
+        	#pseudo>input[type = radio]:checked+label,#pseudo>input[type = checkbox]:checked+label{
+        		color:red;
+        	}
+        	#check{
+        		display:inline-block;
+        	}
+        	#pseudo>input[type = radio]:checked~#check{
+        		position:absolute;
+        		top:69px;
+        		left:22px;
+        		border:1px solid red;
+        		width:5px;
+        		height:5px;
+        		border-radius:100%;
+        		background-color:red;
+        	}
+        	#pseudo>input[type = checkbox]:checked+label:before{
+        		  content     : '✓';
+				  width       : 1em;
+				  font-size   : 0.875em;
+				  line-height : 1em;
+				  text-align  : center;
+				  text-shadow : 0 0 0.0714em rgb(115,153,77);
+				  display:inline-block;
+        	}
+
+        	/*雪碧图部分*/
+        	#sprite > input[type = radio]+label,#sprite > input[type = checkbox]+label{
+                cursor:pointer;
+        		width:10px;
+        		padding-left:23px;
+        		margin-left:5px;
+        	}
+        	
+        	#sprite > input[type=radio] + label{
+        		background : url('check.png') no-repeat -20px -10px;
+        	}
+        	#sprite > input[type=checkbox] + label{
+        		background : url('check.png') no-repeat -20px -32px;
+        	}
+
+        	#sprite >input[type=radio]:checked + label{
+			  background-position : -55px -10px;
+			}
+
+			#sprite >input[type=checkbox]:checked + label{
+			  background-position : -55px -31px;
+			}
+         </style>
+    </head>
+    <body>
+    	<div id = "pseudo">
+    		<p>使用伪元素</p>
+		   
+	    	<input type = "radio" id="circle">
+	    	<label for = "circle"> </label>
+	    	<div id = "check"></div>
+
+	    	<input type = "checkbox" id = "rectangle">
+	    	<label for = "rectangle"> </label>
+    	</div>
+
+    	<div id= "sprite">
+    		<p>使用雪碧图</p>
+
+			<input id="optionCircle" type="radio" name="field" value="option">
+  			<label for="optionCircle"> </label>
+
+  			<input id="optionRec" type="checkbox" name="field" value="option">
+  			<label for="optionRec"> </label>
+			
+    	</div>
+    </body>
+</html>

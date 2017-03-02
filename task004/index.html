@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src="zhengze.js"></script>
+        <style>
+		.trueNumber,.wrongNumber{
+			visibility:none;
+			opacity:0;
+			position:absolute;
+			top:35px;
+			left:150px;
+		}
+		.trueNumber{
+			color:green;
+		}
+		.wrongNumber{
+			color:red;
+		}
+		.word{
+			top:105px;
+		}
+        </style>
+    </head>
+    <body>
+    	<div id="phoneNumber">
+	    	<p>来测试一下是不是电话号码？</p>
+	    	<input type = "text" oninput = "validate(this.value)">
+	    	<p class = "trueNumber">输入正确</p>
+	    	<p class = "wrongNumber">输入错误</p>
+    	</div>
+    	<div id="word">
+	    	<p>来测试一下是否有相连的单词？</p>
+	    	<input type = "text" oninput = "repeatWord(this.value)">
+	    	<p class = "trueNumber word">输入正确</p>
+	    	<p class = "wrongNumber word">输入错误</p>
+    	</div>
+
+    </body>
+</html>
