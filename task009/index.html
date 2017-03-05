@@ -12,9 +12,9 @@
         <canvas id = "mainCanvas"></canvas>
     <script>
     function init(){
-
-        var renderer = new THREE.WebGLRenderer({
-            canvas:document.getElementById('mainCanvas')
+        const renderer = new THREE.WebGLRenderer({
+            canvas:document.getElementById('mainCanvas'),
+            antialias:true
         });
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
@@ -23,14 +23,15 @@
         renderer.shadowMap.enabled = true;
 
         //定义坐标系和照相机
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
         camera.position.set(25,25,-30);
         camera.lookAt(new THREE.Vector3(0,0,0));
         scene.add(camera);
 
         //画出坐标系
-        drawAxes(scene);
+        const axisLine = new THREE.AxisHelper(30);
+        scene.add(axisLine);
         
         var material = new THREE.MeshLambertMaterial({
             color:0xffffff
@@ -40,19 +41,8 @@
         cube.position.set(0,3,-3)
         cube.castShadow = true;
         scene.add(cube);
-    
-        function drawTorus(scene,x,y,z){
-            //定义轮子的材料
-             var materialCircle = new THREE.MeshLambertMaterial({
-                color:0x031915
-            })
-            var torus = new THREE.Mesh(new THREE.TorusGeometry(1,1/3,12,18),
-             materialCircle
-            );
-            torus.position.set(x,y,z);
-            scene.add(torus);
-         }
-         function drawCarLight(scene,x,y,z){
+
+        function drawCarLight(scene,x,y,z){
             //车灯
             var geometry = new THREE.CylinderGeometry( 0.4, 0.4, 0.1, 10 );
             var materialCarLight = new THREE.MeshBasicMaterial( {color: 0xffff00} );
@@ -61,10 +51,19 @@
             cylinder.position.set(x,y,z);
             scene.add( cylinder );
         }
-         drawTorus(scene,-4,1.5,-6);
-         drawTorus(scene,-4,1.5,3);
-         drawTorus(scene,2,1.5,-6);
-         drawTorus(scene,2,1.5,3);
+        const torusPosition = [[-4,1.5,-6],[-4,1.5,3],[2,1.5,-6],[2,1.5,3]];
+        torusPosition.forEach((pos) =>{
+            var materialCircle = new THREE.MeshLambertMaterial({
+                color:0x031915
+            })
+            var torus = new THREE.Mesh(new THREE.TorusGeometry(1,1/3,120,180),
+             materialCircle
+            );
+            torus.position.set(...pos);
+            torus.castShadow = true;
+            scene.add(torus);
+        })
+         
          drawCarLight(scene,5,3,-2);
          drawCarLight(scene,5,3,-4);
 
@@ -80,7 +79,7 @@
         drawFloor(scene);
         //光源
         var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
-        light.position.set(13,10,8);
+        light.position.set(15,15,-15);
         light.target = cube;
         light.castShadow = true;
         scene.add(light);
@@ -92,37 +91,7 @@
         //环境光
         var ambient = new THREE.AmbientLight(0x666666);
             scene.add(ambient);
-        function drawAxes(scene) {
-                // x-axis
-                var xGeo = new THREE.Geometry();
-                xGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-                xGeo.vertices.push(new THREE.Vector3(30, 0, 0));
-                var xMat = new THREE.LineBasicMaterial({
-                    color: 0x000000
-                });
-                var xAxis = new THREE.Line(xGeo, xMat);
-                scene.add(xAxis);
-                
-                // y-axis
-                var yGeo = new THREE.Geometry();
-                yGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-                yGeo.vertices.push(new THREE.Vector3(0, 30, 0));
-                var yMat = new THREE.LineBasicMaterial({
-                    color: 0x00ff00
-                });
-                var yAxis = new THREE.Line(yGeo, yMat);
-                scene.add(yAxis);
-                
-                // z-axis
-                var zGeo = new THREE.Geometry();
-                zGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-                zGeo.vertices.push(new THREE.Vector3(0, 0, 30));
-                var zMat = new THREE.LineBasicMaterial({
-                    color: 0x0000ff
-                });
-                var zAxis = new THREE.Line(zGeo, zMat);
-                scene.add(zAxis);
-            }
+        
         renderer.render(scene,camera);
     }
     </script>
