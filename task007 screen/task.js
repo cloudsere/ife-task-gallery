@@ -1,28 +1,51 @@
-var page = require('webpage').create(),
-system = require('system'),
-args = system.args,
-url = '',
-fs = require('fs'),
-path = 'result.txt',
-t = Date.now();
-if(args.length !== 2){
-    console.log('请输入网址 phantomjs task.js <some url> ')
-}else{
-    url = system.args[1];
-}
+var system = require('system');
+var resourceWait  = 300,
+    maxRenderWait = 50000,
+    url           = system.args[1];
 
-console.log("page is loading...");
-page.open(url, function(status) {
-  console.log("Status: " + status);
-  if(status === 'success') {
-       setTimeout(function(){
-         page.render('bilibili.png');
-         phantom.exit(); 
-     },20000);
-    
-    }else{
-    console.log('fail to load page');
+var page          = require('webpage').create(),
+    count         = 0,
+    number        = 0,
+    forcedRenderTimeout,
+    renderTimeout;
+
+page.viewportSize = { width: 1280, height : 1024 };
+
+function doRender() {
+    page.render('twitter.png');
     phantom.exit();
 }
-});
 
+page.onResourceRequested = function (req) {
+    count += 1;
+    console.log('> ' + req.id + ' - ' + req.url);
+    clearTimeout(renderTimeout);
+};
+
+page.onResourceReceived = function (res) {
+    if (!res.stage || res.stage === 'end') {
+        count -= 1;
+        console.log(res.id + ' ' + res.status + ' - ' + res.url);
+        number = page.evaluate(function(){
+          return document.images.length;
+        })
+        if (count === 0) {
+            renderTimeout = setTimeout(doRender, resourceWait);
+        }
+    }
+};
+
+page.open(url, function (status) {
+    if (status !== "success") {
+        console.log('Unable to load url');
+        phantom.exit();
+    } else {
+      page.evaluate(function(){
+        window.document.body.scrollTop = document.body.scrollHeight;
+      });
+        forcedRenderTimeout = setTimeout(function () {
+            console.log(count);
+            doRender();
+        }, maxRenderWait);
+    }
+});
