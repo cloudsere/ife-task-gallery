@@ -28,7 +28,7 @@
                 camera.lookAt(new THREE.Vector3(0, 0, 0));
                 scene.add(camera);
                 
-                var plane = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 16,16,16),//为什么分段会影响阴影投射的效果？
+                var plane = new THREE.Mesh(new THREE.PlaneGeometry(8, 8, 16,16),//为什么分段会影响阴影投射的效果？
                         new THREE.MeshLambertMaterial({color: 0xcccccc}));
                 plane.rotation.x = -Math.PI / 2;
                 plane.position.y = -1;

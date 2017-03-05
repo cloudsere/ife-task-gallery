@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src = "js/three.js"></script>
+        <style>
+            body{ margin:0; }
+            canvas{ width: 100%; height:100%; }
+        </style>
+    </head>
+    <body onload = "init()">
+        <canvas id = "mainCanvas"></canvas>
+    <script>
+    function init(){
+        const renderer = new THREE.WebGLRenderer({
+            canvas:document.getElementById('mainCanvas'),
+            antialias:true
+        });
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+        renderer.setSize( window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x6f7877);
+        renderer.shadowMap.enabled = true;
+
+        //定义坐标系和照相机
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+        camera.position.set(25,25,-30);
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        scene.add(camera);
+
+        //画出坐标系
+        const axisLine = new THREE.AxisHelper(30);
+        scene.add(axisLine);
+        
+        var materials = [];
+        for (var i = 1; i < 7; ++i) {
+            materials.push(new THREE.MeshBasicMaterial({
+                map: THREE.ImageUtils.loadTexture('img/img' + i + '.jpg',
+                        {}, function() {
+                            renderer.render(scene, camera);
+                        }),
+                overdraw: true
+            }));
+        }
+        //车身
+        var cube = new THREE.Mesh(new THREE.CubeGeometry(10,4,6),new THREE.MeshFaceMaterial(materials));
+        cube.position.set(0,3,-3)
+        cube.castShadow = true;
+        scene.add(cube);
+
+        function drawCarLight(scene,x,y,z){
+            //车灯
+            var geometry = new THREE.CylinderGeometry( 0.4, 0.4, 0.1, 10 );
+            var materialCarLight = new THREE.MeshBasicMaterial( {color: 0xff9900} );
+            var cylinder = new THREE.Mesh( geometry, materialCarLight );
+            cylinder.rotation.z = 4.8;
+            cylinder.position.set(x,y,z);
+            scene.add( cylinder );
+        }
+        const torusPosition = [[-4,1.5,-6],[-4,1.5,3],[2,1.5,-6],[2,1.5,3]];
+        var texture = THREE.ImageUtils.loadTexture('img/tire.jpg',{},function(){
+                renderer.render(scene,camera);
+            });
+        var materialCircle = new THREE.MeshLambertMaterial({
+            map:texture
+        });
+        if(Array.prototype.forEach){
+            torusPosition.forEach((pos) =>{
+            var torus = new THREE.Mesh(new THREE.TorusGeometry(1,1/3,120,180),
+             materialCircle
+            );
+            torus.position.set(...pos);
+            torus.castShadow = true;
+            scene.add(torus);
+        })
+        }else{
+            for(var i = 0; i < 4; i++){
+                torus.position.set(torusPosition[i][0],torusPosition[i][1],torusPosition[i][2]);
+                torus.castShadow = true;
+                scene.add(torus);
+            }
+        }
+        
+         drawCarLight(scene,5,3,-2);
+         drawCarLight(scene,5,3,-4);
+
+        function drawFloor(scene){
+            var geometry = new THREE.PlaneGeometry(30,30,16,16);
+            var texture = THREE.ImageUtils.loadTexture('img/floor.jpg',{},function(){
+                renderer.render(scene,camera);
+            });
+            var material = new THREE.MeshLambertMaterial({
+                map:texture
+            });
+            var plane = new THREE.Mesh(geometry,material);
+            
+            plane.rotation.x = -Math.PI / 2;
+            plane.receiveShadow = true;
+            scene.add(plane); 
+        }
+        drawFloor(scene);
+        //光源
+        var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
+        light.position.set(15,15,-15);
+        light.target = cube;
+        light.castShadow = true;
+        scene.add(light);
+
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+        light.shadow.camera.near = 0.5;
+        light.shadow.camera.far = 1000;
+        //环境光
+        var ambient = new THREE.AmbientLight(0x666666);
+            scene.add(ambient);
+        
+        renderer.render(scene,camera);
+    }
+    </script>
+    </body>
+</html>
