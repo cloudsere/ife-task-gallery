@@ -99,7 +99,7 @@
         drawCarLight(scene,5,3,-4);
 
         //画轮胎
-        const torusPosition = [[-4,1.5,-6],[-4,1.5,3],[2,1.5,-6],[2,1.5,3]];
+        const torusPosition = [[-3,1.5,-6],[-3,1.5,0],[2,1.5,-6],[2,1.5,0]];
         var textureCircle = new THREE.TextureLoader();
         textureCircle.load('img/tire.jpg',function(texture){
             var materialCircle = new THREE.MeshLambertMaterial({
@@ -161,8 +161,16 @@
             controls.handleResize();
             render();
         }
+        window.requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       ||
+                  window.webkitRequestAnimationFrame ||
+                  window.mozRequestAnimationFrame    ||
+                  function( callback ){
+                    window.setTimeout(callback, 1000 / 60);
+                  };
+        })();
         function animate() {
-            requestAnimationFrame( animate );
+            requestAnimFrame( animate );
             controls.update();
         }
         animate();
