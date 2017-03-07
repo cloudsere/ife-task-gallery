@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src = "js/three.js"></script>
+        <script src = "js/TrackballControls.js"></script>
+        <style>
+            body{ margin:0; }
+            #myCanvas{ width: 100%; height:100%; }
+        </style>
+    </head>
+    <body>
+        <div id = 'myCanvas'></div>
+    <script>
+    (function init(){
+        /*-----定义renderer、场景、照相机、坐标系-----*/
+        var container = document.getElementById('myCanvas');
+        const renderer = new THREE.WebGLRenderer({
+            antialias : true,
+        });
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setSize( window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x6f7877);
+        container.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+        camera.position.set(25,25,-30);
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        scene.add(camera);
+
+        const axisLine = new THREE.AxisHelper(30);
+        scene.add(axisLine);
+        
+        //光源
+        var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
+        light.position.set(13,15,-15);
+        light.castShadow = true;
+        scene.add(light);
+
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+        light.shadow.camera.near = 0.5;
+        light.shadow.camera.far = 1000;
+        //环境光
+        var ambient = new THREE.AmbientLight(0x666666);
+        scene.add(ambient);
+
+        /*-----开始绘图-----*/
+        /*定义要贴在车身上的纹理*/
+        var imgTexture = ['img/img1.jpg','img/img2.jpg','img/img3.jpg','img/img4.jpg','img/img5.jpg','img/img6.jpg'];
+        var textureLoopControl = 0;
+        var materials = [];
+        var loader = new THREE.TextureLoader();
+        loader.crossOrigin = true;
+        //因为要给小车的六个面都加上纹理，所以在这里使用promise，因为loader.onLoad是异步执行的
+        var texturePromise = new Promise(function(resolve,reject){
+            var loaderTexture = function(){
+                if(textureLoopControl === imgTexture.length){resolve('success')}
+                var textureUrl = imgTexture[textureLoopControl];
+                loader.load(textureUrl,function(texture){
+                    materials.push(new THREE.MeshLambertMaterial({map:texture}));
+                    textureLoopControl += 1;
+                    loaderTexture();
+                },function(xhr){
+                    var loadingProcess = 1 - xhr.loaded/xhr.total;
+                    while(loadingProcess);
+                });
+            }
+            loaderTexture();
+        })
+        //纹理加载成功后，更新小车的纹理
+        texturePromise.then(function(msg){
+            var cubeSidesMaterial = new THREE.MultiMaterial(materials);
+            cube.material = cubeSidesMaterial;
+            renderer.render(scene,camera);
+        })
+        //在纹理没有加载好的情况下，给小车一个初始的材料
+        var materialWithoutTexture = new THREE.MeshBasicMaterial({
+            color:0x000000
+        })
+        var cube = new THREE.Mesh(new THREE.CubeGeometry(10,4,6),materialWithoutTexture);
+            cube.position.set(0,3,-3)
+            cube.castShadow = true;
+        light.target = cube;
+        scene.add(cube);
+
+        //画车灯
+        function drawCarLight(scene,x,y,z){
+            var geometry = new THREE.CylinderGeometry( 0.4, 0.4, 0.1, 10 );
+            var materialCarLight = new THREE.MeshBasicMaterial( {color: 0xff9900} );
+            var cylinder = new THREE.Mesh( geometry, materialCarLight );
+            cylinder.rotation.z = 4.8;
+            cylinder.position.set(x,y,z);
+            scene.add( cylinder );
+        }
+        drawCarLight(scene,5,3,-2);
+        drawCarLight(scene,5,3,-4);
+
+        //画轮胎
+        const torusPosition = [[-4,1.5,-6],[-4,1.5,3],[2,1.5,-6],[2,1.5,3]];
+        var textureCircle = new THREE.TextureLoader();
+        textureCircle.load('img/tire.jpg',function(texture){
+            var materialCircle = new THREE.MeshLambertMaterial({
+                map:texture
+            });
+            if(Array.prototype.forEach){
+            torusPosition.forEach((pos) =>{
+            var torus = new THREE.Mesh(new THREE.TorusGeometry(1,1/3,120,180),
+             materialCircle
+            );
+            torus.position.set(...pos);
+            torus.castShadow = true;
+            scene.add(torus);
+        })
+        }else{
+            for(var i = 0; i < 4; i++){
+                torus.position.set(torusPosition[i][0],torusPosition[i][1],torusPosition[i][2]);
+                torus.castShadow = true;
+                scene.add(torus);
+            }
+        }
+        });
+        //画地板
+        function drawFloor(scene){
+            var geometry = new THREE.PlaneGeometry(30,30,16,16);
+            var texturePlane = new THREE.TextureLoader();
+            var planeMaterialWithoutTexture = new THREE.MeshBasicMaterial({
+                color:0xc8c7c7
+            })
+            var plane = new THREE.Mesh(geometry,planeMaterialWithoutTexture);
+            plane.rotation.x = -Math.PI / 2;
+            plane.receiveShadow = true;
+            scene.add(plane);
+            texturePlane.load('img/floor.jpg',function(texture){
+                var materialPlane = new THREE.MeshLambertMaterial({
+                    map:texture
+                });
+                plane.material = materialPlane;
+                renderer.render(scene,camera);
+            }); 
+        }
+        drawFloor(scene);
+        
+        //增加控制
+        var controls = new THREE.TrackballControls(camera,renderer.domElement);
+        controls.panSpeed = 0.8;
+        controls.staticMoving = true;
+        controls.dynamicDampingFactor = 0.3;
+        controls.update();
+        controls.addEventListener('change',render);
+        renderer.render(scene,camera);
+        
+        //
+        window.addEventListener( 'resize', onWindowResize, false );        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            controls.handleResize();
+            render();
+        }
+        function animate() {
+            requestAnimationFrame( animate );
+            controls.update();
+        }
+        animate();
+        function render() {
+            renderer.render( scene, camera );
+            stats.update();
+        }
+    })();
+    </script>
+    </body>
+</html>
