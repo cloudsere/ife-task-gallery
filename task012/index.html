@@ -195,7 +195,16 @@
             var keyControlCarD = false;
 
             var v = 0;
-            var a = 0.01;
+            var a = 0.005;
+
+            var id = null;
+
+            function stopAnimation() {
+                if (id !== null) {
+                    cancelAnimationFrame(id);
+                    id = null;
+                }
+            }
 
             var pivotCar = new THREE.Group();
             pivotCar.add(myLittleCar.carBody);
@@ -230,6 +239,7 @@
             window.addEventListener('keydown',onKeyDown,false);
             function onKeyUp(event){
                 v = 0;
+                stopAnimation();
                 event.preventDefault();//可以用event.defaultPrevented来检测
                 if(event.key !== undefined){
                     let eventKeyControlCar = event.key;
@@ -237,13 +247,25 @@
                         case 'w':
                             keyControlCarW = false;
                             break;
+                        case 'W':
+                            keyControlCarW = false;
+                            break;
                         case 's':
+                            keyControlCarS = false;
+                            break;
+                        case 'S':
                             keyControlCarS = false;
                             break;
                         case 'a':
                             keyControlCarA = false;
                             break;
+                        case 'A':
+                            keyControlCarA = false;
+                            break;
                         case 'd':
+                            keyControlCarD = false;
+                            break;
+                        case 'D':
                             keyControlCarD = false;
                             break;
                     }
@@ -266,25 +288,39 @@
                 }
             }
             function onKeyDown(event){
-                event.preventDefault();//可以用event.defaultPrevented来检测
+                draw();
                 if(event.key !== undefined){
                     var eventKeyControlCar = event.key;
+
                     switch(eventKeyControlCar){
                         case 'w':
+                            keyControlCarW = true;
+                            break;
+                        case 'W':
                             keyControlCarW = true;
                             break;
                         case 's':
                             keyControlCarS = true;
                             break;
+                        case 'S':
+                            keyControlCarS = true;
+                            break;
                         case 'a':
+                            keyControlCarA = true;
+                            break;
+                        case 'A':
                             keyControlCarA = true;
                             break;
                         case 'd':
                             keyControlCarD = true;
                             break;
+                        case 'D':
+                            keyControlCarD = true;
+                            break;
                     }
                 }else if(event.keyCode !== undefined){
                     var eventKeyCodeControlCar = event.keyCode;
+                    console.log(eventKeyCodeControlCar);
                     switch(eventKeyCodeControlCar){
                         case 87://w
                             keyControlCarW = true;
@@ -292,7 +328,7 @@
                         case 83://s
                             keyControlCarS = true;
                             break;
-                        case 65://a
+                        case 65://A
                             keyControlCarA = true;
                             break;
                         case 68://d
@@ -303,7 +339,7 @@
             }
             function draw(){
                 stat.begin();
-                requestAnimFrame(draw);
+                id = requestAnimFrame(draw);
                 controls.update();
                 var myCarPositionX = myLittleCar.carBody.position.x;
                 var myCarPositionY = myLittleCar.carBody.position.y;
@@ -315,17 +351,12 @@
                 }else if(myLittleFloor.position.x - myCarPositionX >= 10){
                     myLittleFloor.position.x = myCarPositionX;
                 }
-                console.log(keyControlCarW);
                 if(keyControlCarS){
-                    myLittleCar.carBody.position.x += v;
-                    myLittleCar.carTyre.position.x += v;
-                    myLittleCar.carLight.position.x += v;
+                    pivotCar.position.x += v;
                     v+=a; 
                 }
                 if(keyControlCarW){
-                    myLittleCar.carBody.position.x -= v;
-                    myLittleCar.carTyre.position.x -= v;
-                    myLittleCar.carLight.position.x -= v;
+                    pivotCar.position.x -= v;
                     v+=a;
                 }
                 if(keyControlCarA){
@@ -344,7 +375,7 @@
                 render();
                 stat.end();
             }
-            draw();
+            
             
         })();//driveMyCar
         
