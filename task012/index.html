@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src = "js/three.js"></script>
+        <script src = "js/TrackballControls.js"></script>
+        <script src = "js/stats.min.js"></script>
+        <style>
+            body{ margin:0; }
+            #myCanvas{ width: 100%; height:100%; }
+        </style>
+    </head>
+    <body>
+        <div id = 'myCanvas'></div>
+    <script>
+    (function init(){
+        /*-----定义renderer、场景、照相机、坐标系-----*/
+        const container = document.getElementById('myCanvas');
+        const renderer = new THREE.WebGLRenderer({
+            antialias : true,
+        });
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setSize( window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x6f7877);
+        container.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+        camera.position.set(40,10,5);
+        scene.add(camera);
+
+        const axisLine = new THREE.AxisHelper(30);
+        scene.add(axisLine);
+        
+        //光源
+        var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
+        light.position.set(13,15,-15);
+        light.castShadow = true;
+        scene.add(light);
+
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+        light.shadow.camera.near = 0.5;
+        light.shadow.camera.far = 1000;
+        //环境光
+        var ambient = new THREE.AmbientLight(0x666666);
+        scene.add(ambient);
+
+        /*-----开始绘图-----*/
+        var myLittleCar = (function drawMyCar(){
+            var myCarBody = (function drawMyCarBody(){
+                var imgTexture = ['img/img1.jpg','img/img2.jpg','img/img3.jpg','img/img4.jpg','img/img5.jpg','img/img6.jpg'];
+                var textureLoopControl = 0;
+                var materials = [];
+                var loader = new THREE.TextureLoader();
+                loader.crossOrigin = true;
+                //因为要给小车的六个面都加上纹理，所以在这里使用promise，因为loader.onLoad是异步执行的
+                var texturePromise = new Promise(function(resolve,reject){
+                    var loaderTexture = function(){
+                        if(textureLoopControl === imgTexture.length){resolve('success')}
+                        var textureUrl = imgTexture[textureLoopControl];
+                        loader.load(textureUrl,function(texture){
+                            materials.push(new THREE.MeshLambertMaterial({map:texture}));
+                            textureLoopControl += 1;
+                            loaderTexture();
+                        });
+                    }
+                    loaderTexture();
+                })
+                //纹理加载成功后，更新小车的纹理
+                texturePromise.then(function(msg){
+                    var cubeSidesMaterial = new THREE.MultiMaterial(materials);
+                    cube.material = cubeSidesMaterial;
+                    renderer.render(scene,camera);
+                })
+                //在纹理没有加载好的情况下，给小车一个初始的材料
+                var materialWithoutTexture = new THREE.MeshBasicMaterial({
+                    color:0x000000
+                })
+                var cube = new THREE.Mesh(new THREE.CubeGeometry(9,4,6),materialWithoutTexture);
+                    cube.position.set(0,3,-3)
+                    cube.castShadow = true;
+                light.target = cube;
+                cube.visible = true;
+                scene.add(cube);
+                return cube;
+            })();
+
+            //画车灯
+            var myCarLight = (function drawMyCarLight(){
+                var materialCarLight = new THREE.MeshBasicMaterial( {color: 0xff9900} );
+                var geometryCarLight = new THREE.CylinderGeometry( 0.4, 0.4, 0.1, 10 );
+                var carLightGroup = new THREE.Mesh();
+                function drawMyCarLightMesh(lightX,lightY,lightZ){
+                    var cylinder = new THREE.Mesh( geometryCarLight, materialCarLight );
+                    cylinder.rotation.z = Math.PI/2;
+                    cylinder.position.set(lightX,lightY,lightZ);
+                    carLightGroup.add(cylinder);
+                }
+                //cube.position.set(0,3,-3)
+                drawMyCarLightMesh(myCarBody.position.x+5,myCarBody.position.y,myCarBody.position.z + 1);
+                drawMyCarLightMesh(myCarBody.position.x+5,myCarBody.position.y,myCarBody.position.z - 1);
+                scene.add( carLightGroup );
+                return carLightGroup;
+            })();
+
+            //画轮胎
+            var myCarTyre = (function drawMyCarTyre(){
+                const torusPosition = [[-3,1.5,-6],[-3,1.5,0],[2,1.5,-6],[2,1.5,0]];
+                var carTyreGroup = new THREE.Group();
+                var textureCircle = new THREE.TextureLoader();
+                textureCircle.load('img/tire.jpg',function(texture){
+                    var materialCircle = new THREE.MeshLambertMaterial({
+                        map:texture
+                    });
+                    if(Array.prototype.forEach){
+                        torusPosition.forEach((pos) =>{
+                            let torus = new THREE.Mesh(new THREE.TorusGeometry(1,1/3,120,180),
+                             materialCircle
+                            );
+                            torus.position.set(...pos);
+                            torus.castShadow = true;
+                            carTyreGroup.add(torus);
+                        })
+                    }else{
+                        for(var i = 0; i < 4; i++){
+                            torus.position.set(torusPosition[i][0],torusPosition[i][1],torusPosition[i][2]);
+                            torus.castShadow = true;
+                        }
+                    }
+                });
+                scene.add(carTyreGroup);
+                return carTyreGroup;
+            })();
+            //返回车辆对象
+            return{
+                'carBody':myCarBody,
+                'carTyre':myCarTyre,
+                'carLight':myCarLight
+            }
+        })();//drawMyCar函数，返回车辆对象并赋给myLittleCar
+        //画地板
+        var myLittleFloor = (function drawFloor(scene){
+            var geometryPlane = new THREE.PlaneGeometry(70,70,16,16);
+            var texturePlane = new THREE.TextureLoader();
+            var planeMaterialWithoutTexture = new THREE.MeshBasicMaterial({
+                color:0xc8c7c7
+            })
+            var plane = new THREE.Mesh(geometryPlane,planeMaterialWithoutTexture);
+            plane.doubleSided = true;
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.set(0,0,-3);
+            plane.receiveShadow = true;
+            scene.add(plane);
+            texturePlane.load('img/floor.jpg',function(texture){
+                var materialPlane = new THREE.MeshLambertMaterial({
+                    map:texture
+                });
+                plane.material = materialPlane;
+                renderer.render(scene,camera);
+            }); 
+            return plane;
+        })(scene);
+        //增加控制
+        var controls = new THREE.TrackballControls(camera,renderer.domElement);
+        controls.panSpeed = 0.8;
+        controls.staticMoving = true;
+        controls.dynamicDampingFactor = 0.3;
+        controls.update();
+        controls.addEventListener('change',render);
+        renderer.render(scene,camera);
+
+        //添加监控动画效果
+        var stat = null;
+        stat = new Stats();
+        stat.domElement.style.position = 'absolute';
+        stat.domElement.style.right = '0px';
+        stat.domElement.style.top = '0px';
+        document.body.appendChild(stat.domElement);
+        
+        window.addEventListener( 'resize', onWindowResize, false );        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            controls.handleResize();
+            render();
+        }
+
+        (function driveMyCar(){
+            var keyControlCarW = false;
+            var keyControlCarA = false;
+            var keyControlCarS = false;
+            var keyControlCarD = false;
+
+            var v = 0;
+            var a = 0.01;
+
+            var pivotCar = new THREE.Group();
+            pivotCar.add(myLittleCar.carBody);
+            pivotCar.add(myLittleCar.carTyre);
+            pivotCar.add(myLittleCar.carLight);
+            scene.add(pivotCar)
+            console.log(pivotCar)
+            //得到一个集合体的中心点
+            function getCenterPoint(mesh) {
+                var middle = new THREE.Vector3();
+                var geometry = mesh.geometry;
+
+                geometry.computeBoundingBox();
+
+                middle.x = (geometry.boundingBox.max.x + geometry.boundingBox.min.x) / 2;
+                middle.y = (geometry.boundingBox.max.y + geometry.boundingBox.min.y) / 2;
+                middle.z = (geometry.boundingBox.max.z + geometry.boundingBox.min.z) / 2;
+
+                mesh.localToWorld( middle );
+                return middle;
+            }
+            //和setInterval不同的是，由于requestAnimationFrame只请求一帧画面，因此，除了在init函数中需要调用，在被其调用的函数中需要再次调用requestAnimationFrame
+            window.requestAnimFrame = (function(){
+              return  window.requestAnimationFrame       ||
+                      window.webkitRequestAnimationFrame ||
+                      window.mozRequestAnimationFrame    ||
+                      function( callback ){
+                        window.setTimeout(callback, 1000 / 60);
+                      };
+            })();
+            window.addEventListener('keyup',onKeyUp,false);
+            window.addEventListener('keydown',onKeyDown,false);
+            function onKeyUp(event){
+                v = 0;
+                event.preventDefault();//可以用event.defaultPrevented来检测
+                if(event.key !== undefined){
+                    let eventKeyControlCar = event.key;
+                    switch(eventKeyControlCar){
+                        case 'w':
+                            keyControlCarW = false;
+                            break;
+                        case 's':
+                            keyControlCarS = false;
+                            break;
+                        case 'a':
+                            keyControlCarA = false;
+                            break;
+                        case 'd':
+                            keyControlCarD = false;
+                            break;
+                    }
+                }else if(event.keyCode !== undefined){
+                    let eventKeyCodeControlCar = event.keyCode;
+                    switch(eventKeyCodeControlCar){
+                        case 87://w
+                            keyControlCarW = false;
+                            break;
+                        case 83://s
+                            keyControlCarS = false;
+                            break;
+                        case 65://a
+                            keyControlCarA = false;
+                            break;
+                        case 68://d
+                            keyControlCarD = false;
+                            break;
+                    }
+                }
+            }
+            function onKeyDown(event){
+                event.preventDefault();//可以用event.defaultPrevented来检测
+                if(event.key !== undefined){
+                    var eventKeyControlCar = event.key;
+                    switch(eventKeyControlCar){
+                        case 'w':
+                            keyControlCarW = true;
+                            break;
+                        case 's':
+                            keyControlCarS = true;
+                            break;
+                        case 'a':
+                            keyControlCarA = true;
+                            break;
+                        case 'd':
+                            keyControlCarD = true;
+                            break;
+                    }
+                }else if(event.keyCode !== undefined){
+                    var eventKeyCodeControlCar = event.keyCode;
+                    switch(eventKeyCodeControlCar){
+                        case 87://w
+                            keyControlCarW = true;
+                            break;
+                        case 83://s
+                            keyControlCarS = true;
+                            break;
+                        case 65://a
+                            keyControlCarA = true;
+                            break;
+                        case 68://d
+                            keyControlCarD = true;
+                            break;
+                    }
+                }
+            }
+            function draw(){
+                stat.begin();
+                requestAnimFrame(draw);
+                controls.update();
+                var myCarPositionX = myLittleCar.carBody.position.x;
+                var myCarPositionY = myLittleCar.carBody.position.y;
+                var myCarPositionZ = myLittleCar.carBody.position.z;
+                var centerOfCarBody = getCenterPoint(myLittleCar.carBody);
+                
+                if(myCarPositionX - myLittleFloor.position.x >= 10){
+                    myLittleFloor.position.x = myCarPositionX;
+                }else if(myLittleFloor.position.x - myCarPositionX >= 10){
+                    myLittleFloor.position.x = myCarPositionX;
+                }
+                console.log(keyControlCarW);
+                if(keyControlCarS){
+                    myLittleCar.carBody.position.x += v;
+                    myLittleCar.carTyre.position.x += v;
+                    myLittleCar.carLight.position.x += v;
+                    v+=a; 
+                }
+                if(keyControlCarW){
+                    myLittleCar.carBody.position.x -= v;
+                    myLittleCar.carTyre.position.x -= v;
+                    myLittleCar.carLight.position.x -= v;
+                    v+=a;
+                }
+                if(keyControlCarA){
+                    pivotCar.translate = centerOfCarBody;
+                    pivotCar.rotation.y -= 0.01;
+                   
+                }
+                if(keyControlCarD){
+                    pivotCar.translate = centerOfCarBody;
+                    pivotCar.rotation.y += 0.01;
+                }
+                
+                camera.position.x = myCarPositionX + 40;
+                
+                camera.lookAt(myLittleCar.carBody.position);
+                render();
+                stat.end();
+            }
+            draw();
+            
+        })();//driveMyCar
+        
+        function render() {
+            stat.update();
+            renderer.render( scene, camera );
+        }
+
+    })();
+    </script>
+    </body>
+</html>
