@@ -3,54 +3,58 @@
     <head>
         <meta charset="utf-8">
         <style>
+        
+        body{
+        	margin:0;
+        }
+        body::after{
+        	clear:both;
+        	display:block;
+        	content:'';
+        }
         .row{
         	box-sizing:border-box;
-        	width:100%;
-        	border:1px solid #999;
         	padding:20px;
+        	border:1px solid #999;
         	background-color:#eee;
         	overflow:auto;
+        	min-width:460px;
+        }
+        .leftside,.rightside,.middleside{
+        	border:1px solid #999;
+        	padding:20px;
+        	background:#fff;
         }
         .leftside{
+        	box-sizing:border-box;
         	float:left;
-        	padding:20px 20px 0px 20px;
-        	width:158px;
-        	border:1px solid #999;
-        }
-        .leftside::after{
-        	content:'';
-        	display:block;
-        	clear:both;
+        	position:relative;
+        	width:200px;
+        	margin-right:20px;
         }
 		.rightside{
+			box-sizing:border-box;
+			position:relative;
 			float:right;
-			padding:20px;
-			width:78px;
-			border:1px solid #999;
-		}
-		.rightside::after{
-			content:'';
-			display:block;
-			clear:both;
+			width:120px;
+			margin-left:20px;
 		}
 		.middleside{
-			width:calc(100% - 404px);
-			border:1px solid #999;
-			margin:20px;
-			padding:20px;
+			box-sizing:border-box;
+			position:relative;
+			width:calc(100% - 360px);
+			margin-right:0;
 			display:inline-block;
 		}
 		.team_logo{
+			box-sizing:border-box;
 			width:80px;
 			height:80px;
 			border:1px solid #999;
 			margin-bottom:20px;
+			background-color:#eee;
 		}
-		@media screen and (max-width:460px){
-			.middleside{
-				display:none;
-			}
-		}
+		
         </style>
     </head>
     <body>
@@ -60,7 +64,13 @@
 					<div class = 'team_logo'>
 					</div>
 				</div>
-				<div class = 'middleside'></div>
+				<div class = 'middleside'>
+					<p>关于你们团队的介绍。</p>
+					<p>可以给我们解释一下你们团队名称的来历，或是分别介绍你们团队的成员。</p>
+					<p>百度前端学院（简称ife）是一个由百度人力资源部校园招聘组，百度efe联合出品的面向在校大学生以及对前端技术有兴趣的前端在线学习平台。</p>
+					<p>百度前端学院（简称ife）是一个由百度人力资源部校园招聘组，百度efe联合出品的面向在校大学生以及对前端技术有兴趣的前端在线学习平台。<p>
+					<p>百度前端学院（简称ife）是一个由百度人力资源部校园招聘组，百度efe联合出品的面向在校大学生以及对前端技术有兴趣的前端在线学习平台。</p>
+				</div>
 				<div class = 'rightside'>
 					<div class = 'team_logo'>
 					</div>
