@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <style>
+        .row{
+        	box-sizing:border-box;
+        	width:100%;
+        	border:1px solid #999;
+        	padding:20px;
+        	background-color:#eee;
+        	overflow:auto;
+        }
+        .leftside{
+        	float:left;
+        	padding:20px 20px 0px 20px;
+        	width:158px;
+        	border:1px solid #999;
+        }
+        .leftside::after{
+        	content:'';
+        	display:block;
+        	clear:both;
+        }
+		.rightside{
+			float:right;
+			padding:20px;
+			width:78px;
+			border:1px solid #999;
+		}
+		.rightside::after{
+			content:'';
+			display:block;
+			clear:both;
+		}
+		.middleside{
+			width:calc(100% - 404px);
+			border:1px solid #999;
+			margin:20px;
+			padding:20px;
+			display:inline-block;
+		}
+		.team_logo{
+			width:80px;
+			height:80px;
+			border:1px solid #999;
+			margin-bottom:20px;
+		}
+		@media screen and (max-width:460px){
+			.middleside{
+				display:none;
+			}
+		}
+        </style>
+    </head>
+    <body>
+    	<div class = 'container'>
+			<div class = 'row'>
+				<div class = 'leftside'>
+					<div class = 'team_logo'>
+					</div>
+				</div>
+				<div class = 'middleside'></div>
+				<div class = 'rightside'>
+					<div class = 'team_logo'>
+					</div>
+					<div class = 'team_logo'>
+					</div>
+					<div class = 'team_logo'>
+					</div>
+				</div>
+			</div>
+    	</div>
+    </body>
+</html>

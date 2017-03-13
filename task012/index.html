@@ -201,6 +201,7 @@
 
             function stopAnimation() {
                 if (id !== null) {
+                    console.log('try to stop');
                     cancelAnimationFrame(id);
                     id = null;
                 }
@@ -240,7 +241,6 @@
             function onKeyUp(event){
                 v = 0;
                 stopAnimation();
-                event.preventDefault();//可以用event.defaultPrevented来检测
                 if(event.key !== undefined){
                     let eventKeyControlCar = event.key;
                     switch(eventKeyControlCar){

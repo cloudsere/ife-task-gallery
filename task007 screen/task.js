@@ -1,18 +1,19 @@
 var system = require('system');
-var resourceWait  = 300,
-    maxRenderWait = 50000,
+var resourceWait  = 2000,
+    maxRenderWait = 500000,
     url           = system.args[1];
 
 var page          = require('webpage').create(),
     count         = 0,
-    number        = 0,
     forcedRenderTimeout,
     renderTimeout;
+var scrollNumber = 0;
 
 page.viewportSize = { width: 1280, height : 1024 };
 
 function doRender() {
     page.render('twitter.png');
+    console.log('render');
     phantom.exit();
 }
 
@@ -26,9 +27,7 @@ page.onResourceReceived = function (res) {
     if (!res.stage || res.stage === 'end') {
         count -= 1;
         console.log(res.id + ' ' + res.status + ' - ' + res.url);
-        number = page.evaluate(function(){
-          return document.images.length;
-        })
+        
         if (count === 0) {
             renderTimeout = setTimeout(doRender, resourceWait);
         }
@@ -40,11 +39,20 @@ page.open(url, function (status) {
         console.log('Unable to load url');
         phantom.exit();
     } else {
-      page.evaluate(function(){
-        window.document.body.scrollTop = document.body.scrollHeight;
-      });
+        page.evaluate(function(){
+            var pos = 0;
+            function scroll(){
+                if(window.document.body.scrollTop >= document.body.scrollHeight){
+                    clearInterval(id);
+                    return;
+                }
+                pos += 250;
+                window.document.body.scrollTop = pos
+            }
+            var id = setInterval(scroll,1000);
+        })
         forcedRenderTimeout = setTimeout(function () {
-            console.log(count);
+            console.log("forced"+count);
             doRender();
         }, maxRenderWait);
     }
