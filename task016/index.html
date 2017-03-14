@@ -3,6 +3,10 @@
     <head>
         <meta charset="utf-8">
         <style>
+        *{
+            margin:0;
+            padding:0;
+        }
         .container{
         	padding:20px;
         	border:1px solid #ccc;
@@ -16,11 +20,11 @@
         	justify-content:space-between;
 
         	align-items:center;
-        	align-content:space-around;
         }
         .flex_item{
         	box-sizing:border-box;
-        	margin:20px;
+        	margin-bottom:20px;
+            padding:20px;
         	width:150px;
         	border:1px solid #f00;
         }
@@ -40,7 +44,7 @@
         @media screen and (max-width:640px){
         	.container{
         		align-items:flex-start;
-        		justify-content:space-around;
+        		align-content:space-around;
         	}
         	#item4{
         		order:1;
