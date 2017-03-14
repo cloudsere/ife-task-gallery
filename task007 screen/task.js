@@ -1,6 +1,6 @@
 var system = require('system');
 var resourceWait  = 2000,
-    maxRenderWait = 500000,
+    maxRenderWait = 50000,
     url           = system.args[1];
 
 var page          = require('webpage').create(),
