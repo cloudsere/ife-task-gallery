@@ -32,7 +32,21 @@ var option = {
     xAxis: [
         {
             type: 'category',
-            axisLine: {onZero: true},
+            axisLine:{
+                lineStyle:{
+                    color:"#f34b47",
+                    width:'3'
+                }
+            },
+            axisTick:{
+                show:true,
+                alignWithLabel:true
+            },
+            axisLabel:{
+                textStyle:{
+                    color:'#000000'
+                }
+            },
             data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
         }
     ],
@@ -45,6 +59,18 @@ var option = {
             interval:15,
             axisLabel: {
                 formatter: '{value} 部'
+            },
+            axisTick:{
+                show:false
+            },
+            axisLine:{
+                show:false
+            },
+            splitLine:{
+                lineStyle:{
+                    color:'#ffffff',
+                    width:'3'
+                }
             },
             position:'right'
         }
