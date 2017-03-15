@@ -1,0 +1,17 @@
+/*
+* @Author: heqingqiu
+* @Date:   2017-03-15 16:10:04
+* @Last Modified by:   cloudseer
+* @Last Modified time: 2017-03-15 16:24:18
+*/
+*{
+	margin:0;
+	padding:0;
+}
+html{
+	height:100%;
+	width:100%;
+}
+#main{
+	box-sizing:border-box;
+}
