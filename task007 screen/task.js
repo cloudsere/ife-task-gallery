@@ -1,6 +1,6 @@
 var system = require('system');
 var resourceWait  = 2000,
-    maxRenderWait = 50000,
+    maxRenderWait = 40000,
     url           = system.args[1];
 
 var page          = require('webpage').create(),
@@ -12,8 +12,10 @@ var scrollNumber = 0;
 page.viewportSize = { width: 1280, height : 1024 };
 
 function doRender() {
-    page.render('twitter.png');
-    console.log('render');
+    var pattern = /www.\w+.(cn)*(com)*/;
+    /*page.render(url.match(pattern)[0].split('.')[1]+'.png');
+    console.log(url.match(pattern)[0].split('.')[1]);*/
+    page.render('screen.png');
     phantom.exit();
 }
 
