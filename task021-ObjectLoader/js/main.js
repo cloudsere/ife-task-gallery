@@ -233,24 +233,31 @@ function loadManager(){
     progressBar.id = 'progressBar';
     progress.appendChild(progressBar);
     document.body.appendChild(progress);
+    var nowLoaded;
+    var totalLoad;
+    
     manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
         console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-        function changeWidth(){
-            if(itemsLoaded == itemsTotal){
-                progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
-                return;
-            }else{
-                progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
-                changeWidth();
-            }
-        }
-        changeWidth();
+        nowLoaded = itemsLoaded;
+        totalLoad = itemsTotal;
     };
     manager.onLoad = function ( ) {
         console.log( 'Loading complete!');
     };
     manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
         console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+        nowLoaded = itemsLoaded;
+        function changeWidth(){
+            console.log(nowLoaded);
+            if(nowLoaded == totalLoad){
+                progressBar.style.width = (nowLoaded / totalLoad * 100) + '%';
+                return;
+            }else{
+                progressBar.style.width = (nowLoaded / totalLoad * 100) + '%';
+                changeWidth();
+            }
+        }
+        changeWidth();
     };
     manager.onError = function ( url ) {
         console.log( 'There was an error loading ' + url );
@@ -309,7 +316,6 @@ function initControl(){
     controls.noPan = false;
     controls.staticMoving = true;
     controls.dynamicDampingFactor = 0.3;
-    controls.keys = [65, 83, 68];
     controls.addEventListener('change',render);
     render();
 }
