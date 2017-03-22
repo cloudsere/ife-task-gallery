@@ -219,6 +219,8 @@ function loadCar(){
             if(xhr.lengthComputable){
                 var percentComplete = xhr.loaded / xhr.total * 100;
                 function beforeLoading(){
+                    console.log('before')
+
                     var loadingText = document.getElementById('loading');
                     if(!loadingText){
                         var context = document.createElement('div');
@@ -228,11 +230,14 @@ function loadCar(){
                         context.id = 'loading';
                         container.appendChild(context);
                     }else{
-                        if(percentComplete > 99){
+                        console.log(percentComplete);
+                        if(percentComplete >99){
+                            console.log('abc');
                             container.removeChild(loadingText);
                             return;
                         }else{
                             loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
+                            console.log('text');
                             beforeLoading();
                         }
                     }
