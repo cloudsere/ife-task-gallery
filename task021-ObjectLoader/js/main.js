@@ -218,6 +218,8 @@ function loadCar(){
         var onProgress = function(xhr){
             if(xhr.lengthComputable){
                 var percentComplete = xhr.loaded / xhr.total * 100;
+                console.log(xhr.loaded + 'loaded');
+                console.log(xhr.total + 'total');
                 function beforeLoading(){
                     console.log('before')
 
