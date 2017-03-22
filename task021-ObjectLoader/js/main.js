@@ -227,12 +227,12 @@ function loadCar(){
         var onError = function(xhr){};
 
         var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath('../obj/');
+        mtlLoader.setPath('obj/');
         mtlLoader.load('audicar.mtl',function(materials){
             materials.preload();
             var objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
-            objLoader.setPath('../obj/');
+            objLoader.setPath('obj/');
             objLoader.load('audicar.obj',function(obj){
                 obj.position.set(0,0,0);
                 obj.rotation.set(0,Math.PI/6,0);
