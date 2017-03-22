@@ -227,13 +227,14 @@ function loadCar(){
                         context.style.top = '40%';
                         context.id = 'loading';
                         container.appendChild(context);
-                    }
-                    if(percentComplete > 99){
-                        container.removeChild(loadingText);
-                        return;
                     }else{
-                        loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
-                        beforeLoading();
+                        if(percentComplete > 99){
+                            container.removeChild(loadingText);
+                            return;
+                        }else{
+                            loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
+                            beforeLoading();
+                        }
                     }
                 }
                 beforeLoading();
