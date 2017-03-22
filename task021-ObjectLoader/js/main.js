@@ -189,7 +189,7 @@ window.requestAnimFrame = (function(){
               window.webkitRequestAnimationFrame ||
               window.mozRequestAnimationFrame    ||
               function( callback ){
-                window.setTimeout(callback, 1000 / 60);
+              window.setTimeout(callback, 1000 / 60);
               };
     })();
 
@@ -262,7 +262,16 @@ stat.domElement.style.top = '0px';
 document.body.appendChild(stat.domElement);
 
 function beforeLoading(number){
-    var context = container.innerHTML;
-    context = '<p>' + number + '</p>';
+    var context = document.createElement('p');
+    if(number > 99){
+        container.appendChild(context);
+        return;
+    }
+    context.style.position = 'absolute';
+    context.style.right = '50%';
+    context.style.top = '40%';
+    context.innerHTML = '<h1>现在已经加载' + number +'</h1>';
+    container.appendChild(context);
+    console.log(context)
 }
 })();
