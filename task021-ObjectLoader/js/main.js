@@ -221,7 +221,7 @@ function loadCar(){
                 function beforeLoading(){
                     var loadingText = document.getElementById('loading');
                     if(!loadingText){
-                        var context = document.createElement('p');
+                        var context = document.createElement('div');
                         context.style.position = 'absolute';
                         context.style.right = '50%';
                         context.style.top = '40%';
@@ -229,7 +229,7 @@ function loadCar(){
                         container.appendChild(context);
                     }
                     if(percentComplete > 99){
-                        container.removeChild(context);
+                        container.removeChild(loadingText);
                         return;
                     }else{
                         loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
