@@ -35,9 +35,9 @@
 
     window.addEventListener( 'resize', onWindowResize, false ); 
 
-    //--------------载入外部模型并检测外部操作，在回调函数内部调用animateCar(obj)--------------;
+    //--------------载入外部模型并检测外部操作，在回调函数内部调用animateCar(obj)--------------
     loadCar();
-    //画地板
+    //--------------画地板，返回地板对象floor--------------
     var floor = drawFloor();
 
 function animateCar(obj){
@@ -218,9 +218,7 @@ function loadCar(){
         var onProgress = function(xhr){
             if(xhr.lengthComputable){
                 var percentComplete = xhr.loaded / xhr.total * 100;
-                if(Math.round(percentComplete) > 99){
-                    console.log(xhr);
-                }
+                beforeLoading(percentComplete);
             }
         };
 
@@ -262,4 +260,9 @@ stat.domElement.style.position = 'absolute';
 stat.domElement.style.right = '0px';
 stat.domElement.style.top = '0px';
 document.body.appendChild(stat.domElement);
+
+function beforeLoading(number){
+    var context = container.innerHTML;
+    context = '<p>' + number + '</p>';
+}
 })();
