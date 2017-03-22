@@ -218,7 +218,25 @@ function loadCar(){
         var onProgress = function(xhr){
             if(xhr.lengthComputable){
                 var percentComplete = xhr.loaded / xhr.total * 100;
-                beforeLoading(percentComplete);
+                function beforeLoading(){
+                    var loadingText = document.getElementById('loading');
+                    if(!loadingText){
+                        var context = document.createElement('p');
+                        context.style.position = 'absolute';
+                        context.style.right = '50%';
+                        context.style.top = '40%';
+                        context.id = 'loading';
+                        container.appendChild(context);
+                    }
+                    if(percentComplete > 99){
+                        container.removeChild(context);
+                        return;
+                    }else{
+                        loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
+                        beforeLoading();
+                    }
+                }
+                beforeLoading();
             }
         };
 
@@ -261,17 +279,5 @@ stat.domElement.style.right = '0px';
 stat.domElement.style.top = '0px';
 document.body.appendChild(stat.domElement);
 
-function beforeLoading(number){
-    var context = document.createElement('p');
-    if(number > 99){
-        container.appendChild(context);
-        return;
-    }
-    context.style.position = 'absolute';
-    context.style.right = '50%';
-    context.style.top = '40%';
-    context.innerHTML = '<h1>现在已经加载' + number +'</h1>';
-    container.appendChild(context);
-    console.log(context)
-}
+
 })();
