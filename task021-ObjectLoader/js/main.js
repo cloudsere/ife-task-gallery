@@ -1,43 +1,21 @@
 (function init(){
+    var renderer,
+        camera,
+        scene,
+        light,
+        stat,
+        controls;
+    
+    //--------------创建renderer，场景，照相机，坐标系-----------------------
+    initWorld();
 
-    //--------------创建renderer，场景，照相机，坐标系--------------
-    var container = document.getElementById('myCanvas');
-    var renderer = new THREE.WebGLRenderer({
-        antialias : true,
-    });
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.setSize( window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x6f7877);
-    container.appendChild(renderer.domElement);
+    //--------------加载小助手，用在THREE.OBJLoader(manager)---------------
+    var manager = new THREE.LoadingManager();
+    loadManager();
 
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
-    camera.position.set(40,30,0);
-    scene.add(camera);
-
-    var axisLine = new THREE.AxisHelper(30);
-    scene.add(axisLine);
-
-    //光源
-    var light = new THREE.SpotLight(0xffff00,1,100,Math.PI/6,25);
-    light.position.set(13,15,-15);
-    light.castShadow = true;
-    scene.add(light);
-
-    light.shadow.mapSize.width = 2048;
-    light.shadow.mapSize.height = 2048;
-    light.shadow.camera.near = 0.5;
-    light.shadow.camera.far = 1000;
-    //环境光
-    var ambient = new THREE.AmbientLight(0x666666);
-    scene.add(ambient);
-
-    window.addEventListener( 'resize', onWindowResize, false ); 
-
-    //--------------载入外部模型并检测外部操作，在回调函数内部调用animateCar(obj)--------------
+    //--------------载入外部模型并检测外部操作，在回调函数内部调用animateCar(obj)
     loadCar();
-    //--------------画地板，返回地板对象floor--------------
+    //--------------画地板，返回地板对象floor-------------------------------
     var floor = drawFloor();
 
 function animateCar(obj){
@@ -215,24 +193,70 @@ function drawFloor(){
     return plane;
 }
 function loadCar(){
-        var mtlLoader = new THREE.MTLLoader();
-        mtlLoader.setPath('obj/');
-        mtlLoader.load('audicar.mtl',function(materials){
-            materials.preload();
-            var objLoader = new THREE.OBJLoader(manager);
-            objLoader.setMaterials(materials);
-            objLoader.setPath('obj/');
-            objLoader.load('audicar.obj',function(obj){
-                obj.position.set(0,0,0);
-                obj.rotation.set(0,Math.PI/6,0);
-                obj.scale.set(4,4,4);
-                camera.lookAt(obj.position);
-                animateCar(obj);
-                scene.add(obj);
-                render();
-            })
-        });
+    var mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setPath('obj/');
+    mtlLoader.load('audicar.mtl',function(materials){
+        materials.preload();
+        var objLoader = new THREE.OBJLoader(manager);
+        objLoader.setMaterials(materials);
+        objLoader.setPath('obj/');
+        objLoader.load('audicar.obj',function(obj){
+            obj.position.set(0,4,0);
+            obj.rotation.set(0,Math.PI/6,0);
+            obj.scale.set(4,4,4);
+            obj.castShadow = true;
+            for(var i = 0; i<obj.children.length;i++){
+                obj.children[i].castShadow = true;
+            }
+            camera.lookAt(obj.position);
+            animateCar(obj);
+            scene.add(obj);
+            render();
+        })
+    });
+}
+
+function loadText(){
+    var progress = document.createElement('div');
+    var progressBar = document.createElement('div');
+    progress.appendChild(progressBar);
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function( item, loaded, total){
+        progressBar.style.width =  (loaded / total * 100) + '%';
     }
+}
+
+function loadManager(){
+    var progress = document.createElement('div');
+    progress.id = 'progress';
+    var progressBar = document.createElement('div');
+    progressBar.id = 'progressBar';
+    progress.appendChild(progressBar);
+    document.body.appendChild(progress);
+    manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+        console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    };
+    manager.onLoad = function ( ) {
+        console.log( 'Loading complete!');
+    };
+    manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+        function changeWidth(){
+            if(itemsLoaded == itemsTotal){
+                progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
+                return;
+            }else{
+                progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
+                changeWidth();
+            }
+        }
+        changeWidth();
+        console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+    };
+    manager.onError = function ( url ) {
+        console.log( 'There was an error loading ' + url );
+    };
+}
+
 
 //渲染
 function render(){
@@ -244,42 +268,74 @@ function onWindowResize(){
     renderer.setSize(window.innerWidth,window.innerHeight);
     render();
 }
-//添加监控动画效果
-var stat = null;
-stat = new Stats();
-stat.domElement.style.position = 'absolute';
-stat.domElement.style.right = '0px';
-stat.domElement.style.top = '0px';
-document.body.appendChild(stat.domElement);
 
-function loadText(){
-    var progress = document.createElement('div');
-    var progressBar = document.createElement('div');
-    progress.appendChild(progressBar);
-    var manager = new THREE.LoadingManager();
-    manager.onProgress = function( item, loaded, total){
-        progressBar.style.width =  (loaded / total * 100) + '%';
-    }
+function initRenderer(){
+    var container = document.getElementById('myCanvas');
+    renderer = new THREE.WebGLRenderer({
+        antialias : true,
+    });
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setSize( window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x6f7877);
+    container.appendChild(renderer.domElement);
+    scene = new THREE.Scene();
 }
-var manager = new THREE.LoadingManager();
-var progress = document.createElement('div');
-progress.id = 'progress';
-var progressBar = document.createElement('div');
-progressBar.id = 'progressBar';
-progress.appendChild(progressBar);
-document.body.appendChild(progress);
-manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+function initCamera(){
+    camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,100);
+    camera.position.set(40,30,0);
+    scene.add(camera);
+}
+function initLight(){
+    light = new THREE.SpotLight(0xffff00,1,100,Math.PI/3,25);
+    light.position.set(10,15,0);
+    light.castShadow = true;
+    scene.add(light);
 
-    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-};
-manager.onLoad = function ( ) {
-    console.log( 'Loading complete!');
-};
-manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
-    progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
-    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-};
-manager.onError = function ( url ) {
-    console.log( 'There was an error loading ' + url );
-};
+    light.shadow.mapSize.width = 2048;
+    light.shadow.mapSize.height = 2048;
+    light.shadow.camera.near = 0.5;
+    light.shadow.camera.far = 1000;
+    //环境光
+    var ambient = new THREE.AmbientLight(0x666666);
+    scene.add(ambient);
+}
+function initControl(){
+    controls = new THREE.TrackballControls(camera);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
+    controls.keys = [65, 83, 68];
+    controls.addEventListener('change',render);
+    render();
+}
+function addStat(){
+    stat = new Stats();
+    stat.domElement.style.position = 'absolute';
+    stat.domElement.style.right = '0px';
+    stat.domElement.style.top = '0px';
+    document.body.appendChild(stat.domElement);
+}
+function initWorld(){
+    initRenderer();
+    initCamera()
+    initLight();
+    addStat();
+    initControl();
+    controlAnimate();
+
+    window.addEventListener( 'resize', onWindowResize, false ); 
+    var axisLine = new THREE.AxisHelper(30);
+    scene.add(axisLine);
+}
+ function controlAnimate() {
+    controls.update();
+    requestAnimationFrame(controlAnimate);
+}
+
+
 })();
