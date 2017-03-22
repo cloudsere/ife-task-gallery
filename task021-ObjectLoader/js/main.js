@@ -215,46 +215,11 @@ function drawFloor(){
     return plane;
 }
 function loadCar(){
-        var onProgress = function(xhr){
-            if(xhr.lengthComputable){
-                var percentComplete = xhr.loaded / xhr.total * 100;
-                console.log(xhr.loaded + 'loaded');
-                console.log(xhr.total + 'total');
-                function beforeLoading(){
-                    console.log('before')
-
-                    var loadingText = document.getElementById('loading');
-                    if(!loadingText){
-                        var context = document.createElement('div');
-                        context.style.position = 'absolute';
-                        context.style.right = '50%';
-                        context.style.top = '40%';
-                        context.id = 'loading';
-                        container.appendChild(context);
-                    }else{
-                        console.log(percentComplete);
-                        if(percentComplete >99){
-                            console.log('abc');
-                            container.removeChild(loadingText);
-                            return;
-                        }else{
-                            loadingText.innerHTML = '<h1>现在已经加载' + percentComplete +'</h1>';
-                            console.log('text');
-                            beforeLoading();
-                        }
-                    }
-                }
-                beforeLoading();
-            }
-        };
-
-        var onError = function(xhr){};
-
         var mtlLoader = new THREE.MTLLoader();
         mtlLoader.setPath('obj/');
         mtlLoader.load('audicar.mtl',function(materials){
             materials.preload();
-            var objLoader = new THREE.OBJLoader();
+            var objLoader = new THREE.OBJLoader(manager);
             objLoader.setMaterials(materials);
             objLoader.setPath('obj/');
             objLoader.load('audicar.obj',function(obj){
@@ -266,7 +231,7 @@ function loadCar(){
                 scene.add(obj);
                 render();
             })
-        },onProgress,onError);
+        });
     }
 
 //渲染
@@ -287,5 +252,34 @@ stat.domElement.style.right = '0px';
 stat.domElement.style.top = '0px';
 document.body.appendChild(stat.domElement);
 
+function loadText(){
+    var progress = document.createElement('div');
+    var progressBar = document.createElement('div');
+    progress.appendChild(progressBar);
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function( item, loaded, total){
+        progressBar.style.width =  (loaded / total * 100) + '%';
+    }
+}
+var manager = new THREE.LoadingManager();
+var progress = document.createElement('div');
+progress.id = 'progress';
+var progressBar = document.createElement('div');
+progressBar.id = 'progressBar';
+progress.appendChild(progressBar);
+document.body.appendChild(progress);
+manager.onStart = function ( url, itemsLoaded, itemsTotal ) {
 
+    console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+};
+manager.onLoad = function ( ) {
+    console.log( 'Loading complete!');
+};
+manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+    progressBar.style.width = (itemsLoaded / itemsTotal * 100) + '%';
+    console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+};
+manager.onError = function ( url ) {
+    console.log( 'There was an error loading ' + url );
+};
 })();
