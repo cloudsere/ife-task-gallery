@@ -9,7 +9,7 @@
     //--------------创建renderer，场景，照相机，坐标系-----------------------
     initWorld();
 
-    //--------------加载小助手，用在THREE.OBJLoader(manager)---------------
+    //--------------加载助手，用在THREE.OBJLoader(manager)---------------
     var manager = new THREE.LoadingManager();
     loadManager();
 
@@ -131,34 +131,75 @@ function drawFloor(){
 }
 function loadCar(){
     var mtlLoader = new THREE.MTLLoader();
-    mtlLoader.setPath('obj/');
-    mtlLoader.load('car.mtl',function(materials){
-        materials.preload();
-        var objLoader = new THREE.OBJLoader(manager);
-        objLoader.setMaterials(materials);
-        objLoader.setPath('obj/');
-        objLoader.load('car.obj',function(obj){
-            obj.position.set(0,4,0);
-            obj.rotation.set(0,Math.PI/6,0);
-            obj.scale.set(4,4,4);
-            obj.castShadow = true;
-            var leftDoor,
-                rightDoor;
-            for(var i = 0; i<obj.children.length;i++){
-                obj.children[i].castShadow = true;
-                if(obj.children[i].name == 'DoorL'){
-                    leftDoor = obj.children[i]
-                }
-                if(obj.children[i].name == 'DoorR'){
-                    rightDoor = obj.children[i]
-                }
+    var objLoader = new THREE.OBJLoader(manager);
+    var materialShader;
+    loadCarShader();
+    function loadCarShader(){
+        var requestVs = new XMLHttpRequest(),
+            urlVs = 'shader/my.vs',
+            requestFs = new XMLHttpRequest(),
+            urlFs = 'shader/my.fs',
+            responseVs = null,
+            responseFs = null;
+
+        requestFs.onreadystatechange = function(){
+            if(requestFs.status == 200 && requestFs.readyState == 4){
+                responseFs = requestFs.responseText;
+                materialShader = new THREE.ShaderMaterial({
+                    vertexShader: responseVs,
+                    fragmentShader: responseFs,
+                    uniforms:{
+                        color:{
+                            type:'v3',
+                            value: new THREE.Color('#0df0f0')
+                        },
+                        light:{
+                            type:'v3',
+                            value:[50,80,60]
+                        }
+                    }
+                });
+                render();
             }
-            camera.lookAt(obj.position);
-            animateCar(obj);
-            scene.add(obj);
-            render();
-        })
+        }
+        requestVs.onreadystatechange = function(){
+            if(requestVs.status == 200 && requestVs.readyState == 4){
+                 responseVs = requestVs.responseText;
+                 console.log(responseVs);
+                 requestFs.open('GET',urlFs,true);
+                 requestFs.overrideMimeType('text/xml');
+                 requestFs.send(null);
+            }
+        }
+        requestVs.open('GET',urlVs,true);
+        requestVs.overrideMimeType('text/xml');
+        requestVs.send(null);
+    }
+
+    objLoader.setPath('obj/');
+    objLoader.load('car.obj',function(obj){
+        obj.position.set(0,4,0);
+        obj.rotation.set(0,Math.PI/6,0);
+        obj.scale.set(4,4,4);
+        obj.castShadow = true;
+        var leftDoor,
+            rightDoor;
+        for(var i = 0; i<obj.children.length;i++){
+            obj.children[i].castShadow = true;
+            obj.children[i].material = materialShader;
+            if(obj.children[i].name == 'DoorL'){
+                leftDoor = obj.children[i]
+            }
+            if(obj.children[i].name == 'DoorR'){
+                rightDoor = obj.children[i]
+            }
+        }
+        camera.lookAt(obj.position);
+        animateCar(obj);
+        scene.add(obj);
+        render();
     });
+    
 }
 
 function loadText(){
