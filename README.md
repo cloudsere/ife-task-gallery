@@ -63,3 +63,59 @@ phantomJs 实现输入关键词抓取百度第一页内容
 #### [WebGL No. 4 - 照相机和交互](https://cloudsere.github.io/ife-task-gallery/task011/index.html)
 
 可以转着看我的小车
+
+
+
+#### [WebGL No.5 - 动画](https://cloudsere.github.io/ife-task-gallery/task012/index.html)
+
+可以操控我的小车前后左右走了
+
+
+
+#### [任务三：三栏式布局](https://cloudsere.github.io/ife-task-gallery/task013/index.html)
+
+css练手之三栏式布局
+
+
+
+#### [任务四：定位和居中](https://cloudsere.github.io/ife-task-gallery/task014/index.html)
+
+css练手之在div里画两个圈圈
+
+
+
+#### [任务五：零基础HTML及CSS编码（二）](https://cloudsere.github.io/ife-task-gallery/task015/index.html)
+
+实现一个简易的博客界面
+
+
+
+#### [ECharts NO.2 - 实现自定义的统计图表](https://cloudsere.github.io/ife-task-gallery/task017/index.html)
+
+echart简单练习又一个
+
+
+
+#### [任务三：零基础JavaScript编码（三）](https://cloudsere.github.io/ife-task-gallery/task019/index.html)
+
+点击排序
+
+
+
+#### [ECharts No.4 - 可视化前的数据预处理](https://cloudsere.github.io/ife-task-gallery/task018/index.html)
+
+用node.js做可视化前的预处理
+
+
+
+#### [WebGL No.6 - 外部模型](https://cloudsere.github.io/ife-task-gallery/task021-ObjectLoader/index.html)
+
+我的小车。。变成奥迪了！
+
+
+
+#### [WebGL No.7 - 着色器](https://cloudsere.github.io/ife-task-gallery/task022-ShaderMaterial/index.html)
+
+是的，现在车是这样
+
+![car](img/car.png)
